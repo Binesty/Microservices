@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservices-analysis
+  namespace: workspace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: microservices-analysis
+  template:
+    metadata:
+      labels:
+        app: microservices-analysis
+    spec:
+      containers:
+      - name: microservices-analysis
+        image: microservices-analysis
+        env:
+        - name: VAULT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: vault-access-secret
+              key: VAULT_TOKEN
+        - name: VAULT_ADDRESS
+          valueFrom:
+            secretKeyRef:
+              name: vault-access-secret
+              key: VAULT_ADDRESS
+        resources:
+          limits:
+            memory: "400Mi"
+            cpu: "200m"
+      imagePullSecrets:
+        - name: secret-azure-registry
+      nodeSelector:
+        node-group: application
+---

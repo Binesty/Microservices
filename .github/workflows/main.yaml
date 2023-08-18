@@ -1,0 +1,73 @@
+name: pipelines
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  build:  
+    runs-on: ubuntu-latest
+    name: build
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore --configuration release
+
+  test:
+    runs-on: ubuntu-latest
+    name: test
+    needs: build
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 7.0.x
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal 
+
+  release:
+    runs-on: ubuntu-latest
+    name: release     
+    needs: test
+    steps:
+      - name: Chekout
+        uses: actions/checkout@v3
+
+      - name: Login on azure container registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: binesty.azurecr.io
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Push images registry
+        run: |
+          docker build -t binesty.azurecr.io/microservices-analysis:${{ github.sha }} -f ./source/Microservices.Analysis/Dockerfile --build-arg ARG_ENVIRONMENT=production . 
+          docker push binesty.azurecr.io/microservices-analysis:${{ github.sha }}
+
+      - name: Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Update image tag version
+        run: |
+          cd kubernetes
+          kustomize edit set image microservices-analysis=binesty.azurecr.io/api-catalogs:${{ github.sha }}
+
+      - name: Commit image tag version 
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "${{ github.actor }}"
+          git commit -am '${{ github.event.head_commit.message }}'
+      
+      - name: Push changes
+        uses: ad-m/github-push-action@master

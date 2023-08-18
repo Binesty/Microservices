@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{F5DE1142-CCE1-43B2-833B-6454F95F7EDB}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		architecture.drawio = architecture.drawio
+		Icon.png = Icon.png
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservices.Analysis", "source\Microservices.Analysis\Microservices.Analysis.csproj", "{F9A1ECF9-A312-4A25-86CD-878FD97EBA2C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kubernetes", "Kubernetes", "{F06E6BCF-84F8-4073-BA0D-BED3BECD0A8E}"
+	ProjectSection(SolutionItems) = preProject
+		kubernetes\kustomization.yaml = kubernetes\kustomization.yaml
+		kubernetes\microservices-analysis.yaml = kubernetes\microservices-analysis.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub Actions", "GitHub Actions", "{A259C7BC-5220-4BF0-A038-8F106CD47AB4}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\development.yaml = .github\workflows\development.yaml
+		.github\workflows\main.yaml = .github\workflows\main.yaml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F9A1ECF9-A312-4A25-86CD-878FD97EBA2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9A1ECF9-A312-4A25-86CD-878FD97EBA2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9A1ECF9-A312-4A25-86CD-878FD97EBA2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9A1ECF9-A312-4A25-86CD-878FD97EBA2C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ABFB418E-F081-4186-9F4E-3B375145137F}
+	EndGlobalSection
+EndGlobal
