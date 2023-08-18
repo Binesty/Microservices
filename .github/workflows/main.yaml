@@ -61,7 +61,7 @@ jobs:
       - name: Update image tag version
         run: |
           cd kubernetes
-          kustomize edit set image microservices-analysis=binesty.azurecr.io/api-catalogs:${{ github.sha }}
+          kustomize edit set image microservices-analysis=binesty.azurecr.io/microservices-analysis:${{ github.sha }}
 
       - name: Commit image tag version 
         run: |
