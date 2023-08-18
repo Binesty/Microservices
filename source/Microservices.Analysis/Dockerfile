@@ -5,7 +5,6 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 ARG ARG_ENVIRONMENT
 ENV ENVIRONMENT $ARG_ENVIRONMENT
 WORKDIR /src
-COPY ["nuget.config", "."]
 COPY ["source/Microservices.Analysis/Microservices.Analysis.csproj", "source/Microservices.Analysis/"]
 RUN dotnet restore "source/Microservices.Analysis/Microservices.Analysis.csproj"
 COPY . .
