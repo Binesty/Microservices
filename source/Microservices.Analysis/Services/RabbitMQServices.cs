@@ -40,6 +40,8 @@ namespace Microservices.Analysis.Services
         {
             string message = string.Empty;
 
+            Channel.BasicQos(prefetchSize: 0, prefetchCount: 10, global: false);
+
             var eventingConsumer = new EventingBasicConsumer(Channel);
             eventingConsumer.Received += (model, content) =>
             {
