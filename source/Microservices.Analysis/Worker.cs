@@ -1,21 +1,25 @@
+using Microservices.Analysis.Services;
+
 namespace Microservices.Analysis
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
+        private readonly RabbitMQServices _rabbitMQServices;
 
         public Worker(ILogger<Worker> logger)
         {
             _logger = logger;
+            _rabbitMQServices = new();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            await Task.Run(() =>
             {
-                _logger.LogInformation("Microservices Analysis running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
-            }
+                _rabbitMQServices.StartGetMessages(_logger);
+            },
+            stoppingToken);
         }
     }
 }

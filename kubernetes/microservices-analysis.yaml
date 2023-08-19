@@ -27,6 +27,11 @@ spec:
             secretKeyRef:
               name: vault-access-secret
               key: VAULT_ADDRESS
+        - name: ENVIRONMENT
+          valueFrom:
+            secretKeyRef:
+              name: vault-access-secret
+              key: ENVIRONMENT
         resources:
           limits:
             memory: "400Mi"

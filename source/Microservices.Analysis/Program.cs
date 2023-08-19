@@ -1,3 +1,5 @@
+using Microservices.Analysis.Extensions;
+
 namespace Microservices.Analysis
 {
     public class Program
@@ -8,6 +10,9 @@ namespace Microservices.Analysis
                 .ConfigureServices(services =>
                 {
                     services.AddHostedService<Worker>();
+
+                    services.AddServices()
+                            .AddSecrets();
                 })
                 .Build();
 
