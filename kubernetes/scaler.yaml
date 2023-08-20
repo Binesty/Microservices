@@ -55,7 +55,7 @@ spec:
   scaleTargetRef:
     name: microservices-analysis
   pollingInterval: 10 # Optional. Default: 30 seconds
-  cooldownPeriod: 120 # Optional. Default: 300 seconds
+  cooldownPeriod: 60 # Optional. Default: 300 seconds
   maxReplicaCount: 10 # Optional. Default: 100  
   minReplicaCount: 0 # Optional. Default: 0
   triggers:
