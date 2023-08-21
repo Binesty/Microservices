@@ -50,7 +50,7 @@ namespace Microservices.Analysis.Services
                 logger.LogInformation($"Message received: {message} at: {DateTimeOffset.Now}");
 
                 Channel.BasicAck(deliveryTag: content.DeliveryTag, multiple: false);
-                Task.Delay(TimeSpan.FromSeconds(2)).Wait();
+                Task.Delay(TimeSpan.FromSeconds(3)).Wait();
             };
 
             Channel.BasicConsume(queue: _queueName, autoAck: false, consumer: eventingConsumer);
