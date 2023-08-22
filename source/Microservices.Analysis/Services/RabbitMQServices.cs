@@ -40,7 +40,7 @@ namespace Microservices.Analysis.Services
         {
             string message = string.Empty;
 
-            Channel.BasicQos(prefetchSize: 0, prefetchCount: 10, global: false);
+            Channel.BasicQos(prefetchSize: 0, prefetchCount: 10000, global: false);
 
             var eventingConsumer = new EventingBasicConsumer(Channel);
             eventingConsumer.Received += (model, content) =>
@@ -50,7 +50,7 @@ namespace Microservices.Analysis.Services
                 logger.LogInformation($"Message received: {message} at: {DateTimeOffset.Now}");
 
                 Channel.BasicAck(deliveryTag: content.DeliveryTag, multiple: false);
-                Task.Delay(TimeSpan.FromSeconds(3)).Wait();
+                //Task.Delay(TimeSpan.FromSeconds(1)).Wait();
             };
 
             Channel.BasicConsume(queue: _queueName, autoAck: false, consumer: eventingConsumer);
