@@ -1,7 +1,7 @@
 apiVersion: external-secrets.io/v1beta1
 kind: SecretStore
 metadata:
-  name: scaler-microservices-analysis-secret-store
+  name: scaled-microservices-analysis-secret-store
   namespace: workspace
 spec:
   provider:
@@ -18,15 +18,15 @@ spec:
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: scaler-microservices-analysis-external-secret
+  name: scaled-microservices-analysis-external-secret
   namespace: workspace  
 spec:
   refreshInterval: "15s"
   secretStoreRef:
-    name: scaler-microservices-analysis-secret-store
+    name: scaled-microservices-analysis-secret-store
     kind: SecretStore
   target:
-    name: scaler-microservices-analysis-secret
+    name: scaled-microservices-analysis-secret
   data:  
   - secretKey: host
     remoteRef:
@@ -37,19 +37,19 @@ spec:
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
-  name: scaler-microservices-analysis-rabbitmq-connection
+  name: scaled-microservices-analysis-rabbitmq-connection
   namespace: workspace
 spec:
   secretTargetRef:
     - parameter: host
-      name: scaler-microservices-analysis-secret
+      name: scaled-microservices-analysis-secret
       key: host
 ---
 
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: scaler-microservices-analysis
+  name: scaled-messages-broker-microservices-analysis
   namespace: workspace
 spec:
   scaleTargetRef:
@@ -66,13 +66,13 @@ spec:
       mode: QueueLength
       value: "20"      
     authenticationRef:
-      name: scaler-microservices-analysis-rabbitmq-connection
+      name: scaled-microservices-analysis-rabbitmq-connection
 ---
 
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: microservices-analysis-cpu-scaledobject
+  name: scaled-cpu-microservices-analysis
   namespace: workspace
 spec:
   minReplicaCount: 1 
@@ -89,7 +89,7 @@ spec:
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: microservices-analysis-memory-scaledobject
+  name: scaled-memory-microservices-analysis
   namespace: workspace
 spec:
   minReplicaCount: 1 
