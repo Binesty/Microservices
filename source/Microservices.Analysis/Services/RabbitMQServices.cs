@@ -39,29 +39,18 @@ namespace Microservices.Analysis.Services
         public void StartGetMessages(ILogger<Worker> logger)
         {
             string message = string.Empty;
-            List<string> messages = new();
-            int index = 0;
-            int total = 100;
 
             Channel.BasicQos(prefetchSize: 0, prefetchCount: 10000, global: false);
 
             var eventingConsumer = new EventingBasicConsumer(Channel);
             eventingConsumer.Received += (model, content) =>
             {
-
-                index++;
                 message = Encoding.UTF8.GetString(content.Body.ToArray());
-                messages.Add(message);
+
                 logger.LogInformation($"Message received: {message} at: {DateTimeOffset.Now}");
 
-                if (index == total)
-                {
-                    messages.Clear();
-                    index = 0;
-                }
-
                 Channel.BasicAck(deliveryTag: content.DeliveryTag, multiple: false);
-                //Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+                Task.Delay(TimeSpan.FromSeconds(1)).Wait();
             };
 
             Channel.BasicConsume(queue: _queueName, autoAck: false, consumer: eventingConsumer);

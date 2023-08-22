@@ -1,90 +1,90 @@
-# apiVersion: external-secrets.io/v1beta1
-# kind: SecretStore
-# metadata:
-#   name: scaler-microservices-analysis-secret-store
-#   namespace: workspace
-# spec:
-#   provider:
-#     vault:
-#       server: "http://vault-internal.vault.svc.cluster.local:8200"
-#       path: "rabbitmq"
-#       version: "v1"
-#       auth:
-#         tokenSecretRef:
-#           name: "vault-access-secret"
-#           key: "VAULT_TOKEN"
-# ---
+apiVersion: external-secrets.io/v1beta1
+kind: SecretStore
+metadata:
+  name: scaler-microservices-analysis-secret-store
+  namespace: workspace
+spec:
+  provider:
+    vault:
+      server: "http://vault-internal.vault.svc.cluster.local:8200"
+      path: "rabbitmq"
+      version: "v1"
+      auth:
+        tokenSecretRef:
+          name: "vault-access-secret"
+          key: "VAULT_TOKEN"
+---
 
-# apiVersion: external-secrets.io/v1beta1
-# kind: ExternalSecret
-# metadata:
-#   name: scaler-microservices-analysis-external-secret
-#   namespace: workspace  
-# spec:
-#   refreshInterval: "15s"
-#   secretStoreRef:
-#     name: scaler-microservices-analysis-secret-store
-#     kind: SecretStore
-#   target:
-#     name: scaler-microservices-analysis-secret
-#   data:  
-#   - secretKey: host
-#     remoteRef:
-#       key: connection
-#       property: amqp
-# ---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: scaler-microservices-analysis-external-secret
+  namespace: workspace  
+spec:
+  refreshInterval: "15s"
+  secretStoreRef:
+    name: scaler-microservices-analysis-secret-store
+    kind: SecretStore
+  target:
+    name: scaler-microservices-analysis-secret
+  data:  
+  - secretKey: host
+    remoteRef:
+      key: connection
+      property: amqp
+---
 
-# apiVersion: keda.sh/v1alpha1
-# kind: TriggerAuthentication
-# metadata:
-#   name: scaler-microservices-analysis-rabbitmq-connection
-#   namespace: workspace
-# spec:
-#   secretTargetRef:
-#     - parameter: host
-#       name: scaler-microservices-analysis-secret
-#       key: host
-# ---
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: scaler-microservices-analysis-rabbitmq-connection
+  namespace: workspace
+spec:
+  secretTargetRef:
+    - parameter: host
+      name: scaler-microservices-analysis-secret
+      key: host
+---
 
-# apiVersion: keda.sh/v1alpha1
-# kind: ScaledObject
-# metadata:
-#   name: scaler-microservices-analysis
-#   namespace: workspace
-# spec:
-#   scaleTargetRef:
-#     name: microservices-analysis
-#   pollingInterval: 10 # Optional. Default: 30 seconds
-#   cooldownPeriod: 60 # Optional. Default: 300 seconds
-#   maxReplicaCount: 10 # Optional. Default: 100  
-#   minReplicaCount: 0 # Optional. Default: 0
-#   triggers:
-#   - type: rabbitmq
-#     metadata:
-#       protocol: amqp
-#       queueName: occurrences
-#       mode: QueueLength
-#       value: "20"      
-#     authenticationRef:
-#       name: scaler-microservices-analysis-rabbitmq-connection
-# ---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: scaler-microservices-analysis
+  namespace: workspace
+spec:
+  scaleTargetRef:
+    name: microservices-analysis
+  pollingInterval: 10
+  cooldownPeriod: 60
+  maxReplicaCount: 10
+  minReplicaCount: 0
+  triggers:
+  - type: rabbitmq
+    metadata:
+      protocol: amqp
+      queueName: occurrences
+      mode: QueueLength
+      value: "20"      
+    authenticationRef:
+      name: scaler-microservices-analysis-rabbitmq-connection
+---
 
-# apiVersion: keda.sh/v1alpha1
-# kind: ScaledObject
-# metadata:
-#   name: microservices-analysis-cpu-scaledobject
-#   namespace: workspace
-# spec:
-#   minReplicaCount: 1 
-#   maxReplicaCount: 5 
-#   scaleTargetRef:
-#     name: microservices-analysis
-#   triggers:
-#   - type: cpu
-#     metricType: Utilization
-#     metadata:
-#       value: "20"
-# ---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: microservices-analysis-cpu-scaledobject
+  namespace: workspace
+spec:
+  minReplicaCount: 1 
+  maxReplicaCount: 5 
+  scaleTargetRef:
+    name: microservices-analysis
+  triggers:
+  - type: cpu
+    metricType: Utilization
+    metadata:
+      value: "90"
+---
 
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
@@ -100,5 +100,5 @@ spec:
   - type: memory
     metricType: Utilization
     metadata:
-      value: "10"
+      value: "80"
 ---
