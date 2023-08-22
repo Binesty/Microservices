@@ -8,4 +8,4 @@ namespace: workspace
 images:
 - name: microservices-analysis
   newName: binesty.azurecr.io/microservices-analysis
-  newTag: 95247a443e0730141090e91041acc02f72df6b29
+  newTag: 195d68c7c9badda405da0a1ff8c81ab97e1b1af6
