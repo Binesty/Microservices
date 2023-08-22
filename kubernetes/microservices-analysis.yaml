@@ -36,6 +36,9 @@ spec:
           limits:
             memory: "400Mi"
             cpu: "200m"
+          requests:
+            memory: "300Mi"
+            cpu: "100m"
       imagePullSecrets:
         - name: secret-azure-registry
       nodeSelector:
