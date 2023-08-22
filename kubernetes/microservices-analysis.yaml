@@ -4,7 +4,7 @@ metadata:
   name: microservices-analysis
   namespace: workspace
 spec:
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
       app: microservices-analysis
