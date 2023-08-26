@@ -70,7 +70,7 @@ jobs:
       - name: Tag built container with Azure Container Registry
         uses: actions-hub/docker/cli@master
         with:
-          args: tag microservices-analysis:${{ github.sha }} binesty.azurecr.io/microservices-analysis:${{ github.sha }}
+          args: tag microservices-analysis:1.0.0 binesty.azurecr.io/microservices-analysis:${{ github.sha }}
       
       - name: Push built container to Azure Container Registry
         uses: actions-hub/docker/cli@master
