@@ -1,4 +1,5 @@
-using Microservices.Analysis.Extensions;
+using Packages.Microservices;
+using Packages.Microservices.Extensions;
 
 namespace Microservices.Analysis
 {
@@ -11,8 +12,11 @@ namespace Microservices.Analysis
                 {
                     services.AddHostedService<Worker>();
 
-                    services.AddServices()
-                            .AddSecrets();
+                    services.AddOptions<Settings>()
+                            .BindConfiguration(Settings.SectionName)
+                            .AddPackagesMicroservices()
+                            .ValidateFluently()
+                            .ValidateOnStart();
                 })
                 .Build();
 

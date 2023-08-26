@@ -10,10 +10,13 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Binesty.Packages.Microservices" Version="1.0.12-preview001" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
-        <PackageReference Include="RabbitMQ.Client" Version="6.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Domain\Commands\" />
     </ItemGroup>
 </Project>
