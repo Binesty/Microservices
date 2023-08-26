@@ -15,21 +15,13 @@ jobs:
       with:
         dotnet-version: 7.0.x
 
-    - name: Configure nuget private repository binesty
-      run: |
-        echo '<?xml version="1.0" encoding="utf-8"?>
-        <configuration>
-          <packageSources>
-            <add key="Binesty" value="https://nuget.pkg.github.com/binesty/index.json" />
-          </packageSources>
-          <packageSourceCredentials>
-            <YourPrivateRepo>
-              <add key="Username" value="read-packages" />
-              <add key="ClearTextPassword" value="${{ secrets.TOKEN_PACKAGES_READ }}" />
-            </YourPrivateRepo>
-          </packageSourceCredentials>
-        </configuration>' > ./NuGet.Config    
-
+    - name: Authorise NuGet
+      uses: StirlingLabs/GithubNugetAuthAction@main
+      with:
+        owner: ${{github.repository_owner}}
+        name: Packages-Microservices
+        token: ${{secrets.TOKEN_PACKAGES_READ}}
+        
     - name: Restore dependencies
       run: dotnet restore --interactive
 
