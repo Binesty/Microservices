@@ -62,9 +62,9 @@ spec:
   - type: rabbitmq
     metadata:
       protocol: amqp
-      queueName: occurrences
+      queueName: commands:analysis-occurrences
       mode: QueueLength
-      value: "1"      
+      value: "5"      
     authenticationRef:
       name: scaled-microservices-analysis-rabbitmq-connection
 ---
