@@ -31,7 +31,7 @@ jobs:
         </configuration>' > ./NuGet.Config    
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore --interactive
 
     - name: Build
       run: dotnet build --no-restore --configuration release
