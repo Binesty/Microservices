@@ -50,6 +50,13 @@ jobs:
       - name: Chekout
         uses: actions/checkout@v3
 
+      - name: Authorise NuGet
+        uses: StirlingLabs/GithubNugetAuthAction@main
+        with:
+          owner: ${{github.repository_owner}}
+          name: Packages-Microservices
+          token: ${{secrets.TOKEN_PACKAGES_READ}}
+
       - name: Login on azure container registry
         uses: azure/docker-login@v1
         with:
