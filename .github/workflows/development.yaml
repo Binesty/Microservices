@@ -13,14 +13,28 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: 7.0.x        
+        dotnet-version: 7.0.x
+
+    - name: Configure nuget private repository binesty
+      run: |
+        echo '<?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <packageSources>
+            <add key="Binesty" value="https://nuget.pkg.github.com/binesty/index.json" />
+          </packageSources>
+          <packageSourceCredentials>
+            <YourPrivateRepo>
+              <add key="Username" value="read-packages" />
+              <add key="ClearTextPassword" value="${{ secrets.TOKEN_PACKAGES_READ }}" />
+            </YourPrivateRepo>
+          </packageSourceCredentials>
+        </configuration>' > $HOME/.nuget/NuGet/NuGet.Config    
 
     - name: Restore dependencies
       run: dotnet restore
 
     - name: Build
       run: dotnet build --no-restore --configuration release
-
 
   test:
     runs-on: ubuntu-latest
