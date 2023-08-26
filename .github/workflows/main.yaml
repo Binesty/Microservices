@@ -57,15 +57,15 @@ jobs:
           name: Packages-Microservices
           token: ${{secrets.TOKEN_PACKAGES_READ}}
 
-      - name: Login on azure container registry
-        uses: azure/docker-login@v1
-        with:
-          login-server: binesty.azurecr.io
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-
       - name: Publish
         run: dotnet publish --configuration Release
+
+      - name: Docker Login
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_REGISTRY_URL: binesty.azurecr.io
+          DOCKER_USERNAME: ${{ secrets.REGISTRY_USER }}
+          DOCKER_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Tag built container with Azure Container Registry
         uses: actions-hub/docker/cli@master
