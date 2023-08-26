@@ -6,9 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <ContainerRuntimeIdentifier>linux-arm64</ContainerRuntimeIdentifier>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <ContainerBaseImage>mcr.microsoft.com/dotnet/runtime:7.0</ContainerBaseImage>
-        <ContainerRegistry>binesty.azurecr.io</ContainerRegistry>
-        <ContainerImageName>microservices-analysis</ContainerImageName>        
+        <ContainerBaseImage>mcr.microsoft.com/dotnet/runtime:7.0</ContainerBaseImage>        
+        <ContainerImageName>microservices-analysis</ContainerImageName>
     </PropertyGroup>
 
     <ItemGroup>
