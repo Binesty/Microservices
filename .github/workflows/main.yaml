@@ -58,7 +58,7 @@ jobs:
           token: ${{secrets.TOKEN_PACKAGES_READ}}
 
       - name: Publish
-        run: dotnet publish --configuration Release
+        run: dotnet publish --os linux --arch x64 /t:PublishContainer -c Release
 
       - name: Docker Login
         uses: actions-hub/docker/login@master

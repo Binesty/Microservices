@@ -4,7 +4,6 @@
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <PublishProfile>DefaultContainer</PublishProfile>
         <ContainerRuntimeIdentifier>linux-arm64</ContainerRuntimeIdentifier>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <ContainerBaseImage>mcr.microsoft.com/dotnet/runtime:7.0</ContainerBaseImage>
