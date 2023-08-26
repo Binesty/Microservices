@@ -28,7 +28,7 @@ jobs:
               <add key="ClearTextPassword" value="${{ secrets.TOKEN_PACKAGES_READ }}" />
             </YourPrivateRepo>
           </packageSourceCredentials>
-        </configuration>' > $HOME/.nuget/NuGet/NuGet.Config    
+        </configuration>' > ./NuGet.Config    
 
     - name: Restore dependencies
       run: dotnet restore
