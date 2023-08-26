@@ -4,10 +4,17 @@
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <UserSecretsId>dotnet-Microservices.Analysis-53b68343-247a-4a4f-932b-2948916a7d94</UserSecretsId>
+        <PublishProfile>DefaultContainer</PublishProfile>
+        <ContainerRuntimeIdentifier>linux-arm64</ContainerRuntimeIdentifier>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <DockerfileContext>..\..</DockerfileContext>
+        <ContainerBaseImage>mcr.microsoft.com/dotnet/runtime:7.0</ContainerBaseImage>
+        <ContainerRegistry>binesty.azurecr.io</ContainerRegistry>
+        <ContainerImageName>microservices-analysis</ContainerImageName>        
     </PropertyGroup>
+
+    <ItemGroup>
+        <ContainerLabel Include="microservice-type" Value="commands" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Binesty.Packages.Microservices" Version="1.0.12-preview001" />
