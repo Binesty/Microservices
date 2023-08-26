@@ -16,7 +16,7 @@ jobs:
         dotnet-version: 7.0.x        
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore --source https://nuget.pkg.github.com/binesty/index.json --api-key ${GITHUB_TOKEN}
 
     - name: Build
       run: dotnet build --no-restore --configuration release
