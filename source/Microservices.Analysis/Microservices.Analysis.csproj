@@ -3,16 +3,20 @@
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <ContainerRuntimeIdentifier>linux-arm64</ContainerRuntimeIdentifier>
+        <ImplicitUsings>enable</ImplicitUsings>        
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <ContainerBaseImage>mcr.microsoft.com/dotnet/runtime:7.0</ContainerBaseImage>        
-        <ContainerImageName>microservices-analysis</ContainerImageName>
-        <ContainerWorkingDirectory>/bin</ContainerWorkingDirectory>        
+        <ContainerRuntimeIdentifier>linux-x64</ContainerRuntimeIdentifier>
+        <ContainerBaseImage>mcr.microsoft.com/dotnet/runtime:7.0</ContainerBaseImage>
+        <ContainerRepository>microservices-analysis</ContainerRepository>        
     </PropertyGroup>
 
     <ItemGroup>
         <ContainerLabel Include="microservice-type" Value="commands" />
+    </ItemGroup>
+
+    <ItemGroup Label="Entrypoint Assignment">        
+        <ContainerEntrypoint Include="dotnet" />
+        <ContainerEntrypoint Include="Microservices.Analysis.dll" />
     </ItemGroup>
 
     <ItemGroup>
