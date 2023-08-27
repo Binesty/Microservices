@@ -27,6 +27,11 @@ spec:
             secretKeyRef:
               name: vault-access-secret
               key: VAULT_ADDRESS
+        - name: CATALOG_ADDRESS
+          valueFrom:
+            secretKeyRef:
+              name: vault-access-secret
+              key: CATALOG_ADDRESS
         - name: ENVIRONMENT
           valueFrom:
             secretKeyRef:
