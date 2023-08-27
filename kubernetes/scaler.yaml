@@ -54,17 +54,17 @@ metadata:
 spec:
   scaleTargetRef:
     name: microservices-analysis
-  pollingInterval: 20
-  cooldownPeriod: 60
+  pollingInterval: 60
+  cooldownPeriod: 120
   maxReplicaCount: 4
-  minReplicaCount: 0
+  minReplicaCount: 1
   triggers:
   - type: rabbitmq
     metadata:
       protocol: amqp
       queueName: commands:analysis-occurrences
       mode: QueueLength
-      value: "5"      
+      value: "20000"      
     authenticationRef:
       name: scaled-microservices-analysis-rabbitmq-connection
 ---
