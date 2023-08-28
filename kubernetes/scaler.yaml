@@ -2,7 +2,7 @@ apiVersion: external-secrets.io/v1beta1
 kind: SecretStore
 metadata:
   name: scaled-microservices-analysis-secret-store
-  namespace: workspace
+  namespace: business
 spec:
   provider:
     vault:
@@ -19,7 +19,7 @@ apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
   name: scaled-microservices-analysis-external-secret
-  namespace: workspace  
+  namespace: business  
 spec:
   refreshInterval: "15s"
   secretStoreRef:
@@ -38,7 +38,7 @@ apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
   name: scaled-microservices-analysis-rabbitmq-connection
-  namespace: workspace
+  namespace: business
 spec:
   secretTargetRef:
     - parameter: host
@@ -50,7 +50,7 @@ apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: scaled-messages-broker-microservices-analysis
-  namespace: workspace
+  namespace: business
 spec:
   scaleTargetRef:
     name: microservices-analysis

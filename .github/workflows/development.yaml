@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:  
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     name: build
     steps:
     - uses: actions/checkout@v3
@@ -21,12 +21,13 @@ jobs:
         owner: ${{github.repository_owner}}
         name: Packages-Microservices
         token: ${{secrets.TOKEN_PACKAGES_READ}}
-        
+
     - name: Restore dependencies
-      run: dotnet restore --interactive
+      run: dotnet restore
 
     - name: Build
       run: dotnet build --no-restore --configuration release
+
 
   test:
     runs-on: ubuntu-latest
@@ -42,10 +43,22 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal 
 
-  version:  
-    runs-on: ubuntu-latest    
-    name: version
+
+  release:
+    runs-on: ubuntu-latest
+    name: release     
+    needs: test
     steps:
+      - name: Chekout
+        uses: actions/checkout@v3
+
+      - name: Authorise NuGet
+        uses: StirlingLabs/GithubNugetAuthAction@main
+        with:
+          owner: ${{github.repository_owner}}
+          name: Packages-Microservices
+          token: ${{secrets.TOKEN_PACKAGES_READ}}
+
       - uses: actions/checkout@v3
       - name: Fetch unshallow
         run: git fetch --prune --tags --unshallow
@@ -58,72 +71,39 @@ jobs:
         id: gitversion
         uses: gittools/actions/gitversion/execute@v0
 
-      - name: Display GitVersion outputs (step output)
-        run: |
-          echo "Major: ${{ steps.gitversion.outputs.major }}"
-          echo "Minor: ${{ steps.gitversion.outputs.minor }}"
-          echo "Patch: ${{ steps.gitversion.outputs.patch }}"
-          echo "PreReleaseTag: ${{ steps.gitversion.outputs.preReleaseTag }}"
-          echo "PreReleaseTagWithDash: ${{ steps.gitversion.outputs.preReleaseTagWithDash }}"
-          echo "PreReleaseLabel: ${{ steps.gitversion.outputs.preReleaseLabel }}"
-          echo "PreReleaseNumber: ${{ steps.gitversion.outputs.preReleaseNumber }}"
-          echo "WeightedPreReleaseNumber: ${{ steps.gitversion.outputs.weightedPreReleaseNumber }}"
-          echo "BuildMetaData: ${{ steps.gitversion.outputs.buildMetaData }}"
-          echo "BuildMetaDataPadded: ${{ steps.gitversion.outputs.buildMetaDataPadded }}"
-          echo "FullBuildMetaData: ${{ steps.gitversion.outputs.fullBuildMetaData }}"
-          echo "MajorMinorPatch: ${{ steps.gitversion.outputs.majorMinorPatch }}"
-          echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
-          echo "LegacySemVer: ${{ steps.gitversion.outputs.legacySemVer }}"
-          echo "LegacySemVerPadded: ${{ steps.gitversion.outputs.legacySemVerPadded }}"
-          echo "AssemblySemVer: ${{ steps.gitversion.outputs.assemblySemVer }}"
-          echo "AssemblySemFileVer: ${{ steps.gitversion.outputs.assemblySemFileVer }}"
-          echo "FullSemVer: ${{ steps.gitversion.outputs.fullSemVer }}"
-          echo "InformationalVersion: ${{ steps.gitversion.outputs.informationalVersion }}"
-          echo "BranchName: ${{ steps.gitversion.outputs.branchName }}"
-          echo "EscapedBranchName: ${{ steps.gitversion.outputs.escapedBranchName }}"
-          echo "Sha: ${{ steps.gitversion.outputs.sha }}"
-          echo "ShortSha: ${{ steps.gitversion.outputs.shortSha }}"
-          echo "NuGetVersionV2: ${{ steps.gitversion.outputs.nuGetVersionV2 }}"
-          echo "NuGetVersion: ${{ steps.gitversion.outputs.nuGetVersion }}"
-          echo "NuGetPreReleaseTagV2: ${{ steps.gitversion.outputs.nuGetPreReleaseTagV2 }}"
-          echo "NuGetPreReleaseTag: ${{ steps.gitversion.outputs.nuGetPreReleaseTag }}"
-          echo "VersionSourceSha: ${{ steps.gitversion.outputs.versionSourceSha }}"
-          echo "CommitsSinceVersionSource: ${{ steps.gitversion.outputs.commitsSinceVersionSource }}"
-          echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.commitsSinceVersionSourcePadded }}"
-          echo "UncommittedChanges: ${{ steps.gitversion.outputs.uncommittedChanges }}"
-          echo "CommitDate: ${{ steps.gitversion.outputs.commitDate }}"
+      - name: Publish
+        run: dotnet publish --os linux --arch x64 /t:PublishContainer -c Release
 
-      - name: Display GitVersion outputs (step output with prefix)
+      - name: Docker Login
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_REGISTRY_URL: binesty.azurecr.io
+          DOCKER_USERNAME: ${{ secrets.REGISTRY_USER }}
+          DOCKER_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Tag built container with Azure Container Registry
+        uses: actions-hub/docker/cli@master
+        with:
+          args: tag microservices-analysis:latest binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.majorMinorPatch }}
+      
+      - name: Push built container to Azure Container Registry
+        uses: actions-hub/docker/cli@master
+        with:
+          args: push binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.majorMinorPatch }}
+
+      - name: Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Update image tag version
         run: |
-          echo "Major: ${{ steps.gitversion.outputs.GitVersion_Major }}"
-          echo "Minor: ${{ steps.gitversion.outputs.GitVersion_Minor }}"
-          echo "Patch: ${{ steps.gitversion.outputs.GitVersion_Patch }}"
-          echo "PreReleaseTag: ${{ steps.gitversion.outputs.GitVersion_PreReleaseTag }}"
-          echo "PreReleaseTagWithDash: ${{ steps.gitversion.outputs.GitVersion_PreReleaseTagWithDash }}"
-          echo "PreReleaseLabel: ${{ steps.gitversion.outputs.GitVersion_PreReleaseLabel }}"
-          echo "PreReleaseNumber: ${{ steps.gitversion.outputs.GitVersion_PreReleaseNumber }}"
-          echo "WeightedPreReleaseNumber: ${{ steps.gitversion.outputs.GitVersion_WeightedPreReleaseNumber }}"
-          echo "BuildMetaData: ${{ steps.gitversion.outputs.GitVersion_BuildMetaData }}"
-          echo "BuildMetaDataPadded: ${{ steps.gitversion.outputs.GitVersion_BuildMetaDataPadded }}"
-          echo "FullBuildMetaData: ${{ steps.gitversion.outputs.GitVersion_FullBuildMetaData }}"
-          echo "MajorMinorPatch: ${{ steps.gitversion.outputs.GitVersion_MajorMinorPatch }}"
-          echo "SemVer: ${{ steps.gitversion.outputs.GitVersion_SemVer }}"
-          echo "LegacySemVer: ${{ steps.gitversion.outputs.GitVersion_LegacySemVer }}"
-          echo "LegacySemVerPadded: ${{ steps.gitversion.outputs.GitVersion_LegacySemVerPadded }}"
-          echo "AssemblySemVer: ${{ steps.gitversion.outputs.GitVersion_AssemblySemVer }}"
-          echo "AssemblySemFileVer: ${{ steps.gitversion.outputs.GitVersion_AssemblySemFileVer }}"
-          echo "FullSemVer: ${{ steps.gitversion.outputs.GitVersion_FullSemVer }}"
-          echo "InformationalVersion: ${{ steps.gitversion.outputs.GitVersion_InformationalVersion }}"
-          echo "BranchName: ${{ steps.gitversion.outputs.GitVersion_BranchName }}"
-          echo "EscapedBranchName: ${{ steps.gitversion.outputs.GitVersion_EscapedBranchName }}"
-          echo "Sha: ${{ steps.gitversion.outputs.GitVersion_Sha }}"
-          echo "ShortSha: ${{ steps.gitversion.outputs.GitVersion_ShortSha }}"
-          echo "NuGetVersionV2: ${{ steps.gitversion.outputs.GitVersion_NuGetVersionV2 }}"
-          echo "NuGetVersion: ${{ steps.gitversion.outputs.GitVersion_NuGetVersion }}"
-          echo "NuGetPreReleaseTagV2: ${{ steps.gitversion.outputs.GitVersion_NuGetPreReleaseTagV2 }}"
-          echo "NuGetPreReleaseTag: ${{ steps.gitversion.outputs.GitVersion_NuGetPreReleaseTag }}"
-          echo "VersionSourceSha: ${{ steps.gitversion.outputs.GitVersion_VersionSourceSha }}"
-          echo "CommitsSinceVersionSource: ${{ steps.gitversion.outputs.GitVersion_CommitsSinceVersionSource }}"
-          echo "CommitsSinceVersionSourcePadded: ${{ steps.gitversion.outputs.GitVersion_CommitsSinceVersionSourcePadded }}"
-          echo "UncommittedChanges: ${{ steps.gitversion.outputs.GitVersion_UncommittedChanges }}"
-          echo "CommitDate: ${{ steps.gitversion.outputs.GitVersion_CommitDate }}"
+          cd kubernetes
+          kustomize edit set image microservices-analysis=binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.majorMinorPatch }}
+
+      - name: Commit image tag version 
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "${{ github.actor }}"
+          git commit -am '${{ github.event.head_commit.message }}'
+      
+      - name: Push changes
+        uses: ad-m/github-push-action@master
