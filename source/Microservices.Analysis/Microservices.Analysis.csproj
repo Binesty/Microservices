@@ -7,7 +7,8 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <ContainerRuntimeIdentifier>linux-x64</ContainerRuntimeIdentifier>
         <ContainerBaseImage>mcr.microsoft.com/dotnet/runtime:7.0</ContainerBaseImage>
-        <ContainerRepository>microservices-analysis</ContainerRepository>        
+        <ContainerRepository>microservices-analysis</ContainerRepository>
+        <ContainerImageTag>latest</ContainerImageTag>
     </PropertyGroup>
 
     <ItemGroup>
