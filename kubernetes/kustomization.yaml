@@ -8,4 +8,4 @@ namespace: business
 images:
 - name: microservices-analysis
   newName: binesty.azurecr.io/microservices-analysis
-  newTag: a5b5da78f9521cb252130e833918ccf37d555ddb
+  newTag: 1.1.0-alpha.10
