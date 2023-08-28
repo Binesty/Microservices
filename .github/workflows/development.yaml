@@ -84,12 +84,12 @@ jobs:
       - name: Tag built container with Azure Container Registry
         uses: actions-hub/docker/cli@master
         with:
-          args: tag microservices-analysis:latest binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.majorMinorPatch }}
+          args: tag microservices-analysis:latest binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.semVer }}
       
       - name: Push built container to Azure Container Registry
         uses: actions-hub/docker/cli@master
         with:
-          args: push binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.majorMinorPatch }}
+          args: push binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.semVer }}
 
       - name: Kustomize
         uses: imranismail/setup-kustomize@v2
@@ -97,14 +97,15 @@ jobs:
       - name: Update image tag version
         run: |
           cd kubernetes
-          kustomize edit set image microservices-analysis=binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.majorMinorPatch }}
+          kustomize edit set image microservices-analysis=binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.semVer }}
 
       - name: Commit image tag version 
         run: |
           git config --local user.email "action@github.com"
-          git config --local user.name "${{ github.actor }}"
-          git pull
+          git config --local user.name "${{ github.actor }}"          
           git commit -am '${{ github.event.head_commit.message }}'
       
       - name: Push changes
         uses: ad-m/github-push-action@master
+        with:
+          branch: ${{ github.head_ref }}
