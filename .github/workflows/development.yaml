@@ -52,6 +52,13 @@ jobs:
       - name: Chekout
         uses: actions/checkout@v3
 
+      - name: Create Tags
+        uses: anothrNick/github-tag-action@v1.67.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: false
+          PRERELEASE: true
+
       - name: Authorise NuGet
         uses: StirlingLabs/GithubNugetAuthAction@main
         with:
