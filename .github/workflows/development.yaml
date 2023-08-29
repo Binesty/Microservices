@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:  
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     name: build
     steps:
     - uses: actions/checkout@v3
@@ -21,12 +21,14 @@ jobs:
         owner: ${{github.repository_owner}}
         name: Packages-Microservices
         token: ${{secrets.TOKEN_PACKAGES_READ}}
-        
+
     - name: Restore dependencies
-      run: dotnet restore --interactive
+      run: dotnet restore
 
     - name: Build
       run: dotnet build --no-restore --configuration release
+
+
 
   test:
     runs-on: ubuntu-latest
@@ -40,4 +42,72 @@ jobs:
         dotnet-version: 7.0.x
 
     - name: Test
-      run: dotnet test --no-build --verbosity normal 
+      run: dotnet test --no-build --verbosity normal
+
+
+
+  release:
+    runs-on: ubuntu-latest
+    name: release     
+    needs: test
+    steps:
+      - name: Chekout
+        uses: actions/checkout@v3
+
+      - name: Authorise NuGet
+        uses: StirlingLabs/GithubNugetAuthAction@main
+        with:
+          owner: ${{github.repository_owner}}
+          name: Packages-Microservices
+          token: ${{secrets.TOKEN_PACKAGES_READ}}
+
+      - uses: actions/checkout@v3
+      - name: Fetch unshallow
+        run: git fetch --prune --tags --unshallow
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.10.2
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0
+
+      - name: Publish
+        run: dotnet publish --os linux --arch x64 /t:PublishContainer -c Release
+
+      - name: Docker Login
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_REGISTRY_URL: binesty.azurecr.io
+          DOCKER_USERNAME: ${{ secrets.REGISTRY_USER }}
+          DOCKER_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Tag built container with Azure Container Registry
+        uses: actions-hub/docker/cli@master
+        with:
+          args: tag microservices-analysis:latest binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.semVer }}
+      
+      - name: Push built container to Azure Container Registry
+        uses: actions-hub/docker/cli@master
+        with:
+          args: push binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.semVer }}
+
+      - name: Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Update image tag version
+        run: |
+          cd kubernetes
+          kustomize edit set image microservices-analysis=binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.semVer }}
+
+      - name: Commit image tag version 
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "${{ github.actor }}"          
+          git commit -am '${{ github.event.head_commit.message }}'
+      
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: development

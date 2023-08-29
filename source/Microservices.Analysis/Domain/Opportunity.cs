@@ -8,5 +8,6 @@ namespace Microservices.Analysis.Domain
 
         public required string Description { get; set; }
 
+        public required decimal Score { get; set; }
     }
 }

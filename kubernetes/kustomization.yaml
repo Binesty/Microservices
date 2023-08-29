@@ -4,8 +4,8 @@ resources:
 - microservices-analysis.yaml
 - scaler.yaml
 
-namespace: workspace
+namespace: business
 images:
 - name: microservices-analysis
   newName: binesty.azurecr.io/microservices-analysis
-  newTag: 0.0.1-main.1.368d7c8
+  newTag: 0.1.0-alpha.119
