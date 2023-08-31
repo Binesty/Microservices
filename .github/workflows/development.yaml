@@ -73,18 +73,10 @@ jobs:
         id: gitversion
         uses: gittools/actions/gitversion/execute@v0
 
-      - name: Set version
-        id: version
-        uses: KageKirin/set-csproj-version@v0
+      - name: Patch Versions
+        uses: justalemon/VersionPatcher@master
         with:
-          file: source/Microservices.Analysis/Microservices.Analysis.csproj
           version: ${{ steps.gitversion.outputs.semVer }}
-
-      - name: Commit image tag version 
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "${{ github.actor }}"          
-          git commit -am '${{ github.event.head_commit.message }} - update version in project'
 
       - name: Publish project with version
         run: dotnet publish --version-suffix=development /t:PublishContainer -c Release
