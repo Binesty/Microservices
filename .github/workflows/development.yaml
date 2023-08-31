@@ -61,7 +61,7 @@ jobs:
           name: Packages-Microservices
           token: ${{secrets.TOKEN_PACKAGES_READ}}
 
-      - name: Set MyProject.csproj version
+      - name: Set project version
         id: update
         uses: Thundernerd/dotnet-project-version-updater@v1.2
         with:
@@ -81,12 +81,12 @@ jobs:
       - name: Tag built container with Azure Container Registry
         uses: actions-hub/docker/cli@master
         with:
-          args: tag microservices-analysis:latest binesty.azurecr.io/microservices-analysis:${{ github.event.inputs.version }}
+          args: tag microservices-analysis:latest binesty.azurecr.io/microservices-analysis:${{ steps.update.inputs.version }}
       
       - name: Push built container to Azure Container Registry
         uses: actions-hub/docker/cli@master
         with:
-          args: push binesty.azurecr.io/microservices-analysis:${{ github.event.inputs.version }}
+          args: push binesty.azurecr.io/microservices-analysis:${{ steps.update.inputs.version }}
 
       - name: Kustomize
         uses: imranismail/setup-kustomize@v2
@@ -94,7 +94,7 @@ jobs:
       - name: Update image tag version
         run: |
           cd kubernetes
-          kustomize edit set image microservices-analysis=binesty.azurecr.io/microservices-analysis:${{ github.event.inputs.version }}
+          kustomize edit set image microservices-analysis=binesty.azurecr.io/microservices-analysis:${{ steps.update.inputs.version }}
 
       - name: Commit changes version 
         run: |
