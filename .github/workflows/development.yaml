@@ -61,19 +61,30 @@ jobs:
           name: Packages-Microservices
           token: ${{secrets.TOKEN_PACKAGES_READ}}
 
-      - name: Update version
-        id: version
-        uses: vers-one/dotnet-project-version-updater@v1.3
+      - name: Fetch unshallow
+        run: git fetch --prune --tags --unshallow
+      
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.10.2
         with:
-          file: "source/Microservices.Analysis/Microservices.Analysis.csproj"
-          version: ${{ steps.version.outputs.newVersion }}
+          versionSpec: '5.x'
 
-      - run: |
-          git config user.name "${{ github.actor }}"
-          git config user.email "action@github.com"
-          git add .
-          git commit -m "Update project version to ${{ steps.version.outputs.newVersion }}"
-          git push
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0
+
+      - name: Set version
+        id: version
+        uses: KageKirin/set-csproj-version@v0
+        with:
+          file: source/Microservices.Analysis/Microservices.Analysis.csproj
+          version: ${{ steps.gitversion.outputs.semVer }}
+
+      - name: Commit image tag version 
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "${{ github.actor }}"          
+          git commit -am '${{ github.event.head_commit.message }} - update version in project'
 
       - name: Publish project with version
         run: dotnet publish --version-suffix=development /t:PublishContainer -c Release
@@ -88,12 +99,12 @@ jobs:
       - name: Tag built container with Azure Container Registry
         uses: actions-hub/docker/cli@master
         with:
-          args: tag microservices-analysis:latest binesty.azurecr.io/microservices-analysis:${{ steps.version.outputs.newVersion }}
+          args: tag microservices-analysis:latest binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.semVer }}
       
       - name: Push built container to Azure Container Registry
         uses: actions-hub/docker/cli@master
         with:
-          args: push binesty.azurecr.io/microservices-analysis:${{ steps.version.outputs.newVersion }}
+          args: push binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.semVer }}
 
       - name: Kustomize
         uses: imranismail/setup-kustomize@v2
@@ -101,13 +112,13 @@ jobs:
       - name: Update image tag version
         run: |
           cd kubernetes
-          kustomize edit set image microservices-analysis=binesty.azurecr.io/microservices-analysis:${{ steps.version.outputs.newVersion }}
+          kustomize edit set image microservices-analysis=binesty.azurecr.io/microservices-analysis:${{ steps.gitversion.outputs.semVer }}
 
       - name: Commit image tag version 
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "${{ github.actor }}"          
-          git commit -am '${{ github.event.head_commit.message }}'
+          git commit -am '${{ github.event.head_commit.message }} - update image version deployment kubernetes'
       
       - name: Push changes
         uses: ad-m/github-push-action@master
