@@ -77,7 +77,7 @@ jobs:
         id: update
         uses: vers-one/dotnet-project-version-updater@v1.3
         with:
-          file: "source/Microservices.Analysis/Microservices.Analysis.csproj"
+          file: "source/**/*.csproj"
           version: ${{ steps.gitversion.outputs.majorMinorPatch }}          
 
       - run: |
