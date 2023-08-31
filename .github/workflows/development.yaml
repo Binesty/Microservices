@@ -66,7 +66,7 @@ jobs:
         uses: vers-one/dotnet-project-version-updater@v1.3
         with:
           file: "source/Microservices.Analysis/Microservices.Analysis.csproj"
-          version: ${{ github.event.inputs.version }}
+          version: ${{ steps.version.outputs.newVersion }}
 
       - run: |
           git config user.name "${{ github.actor }}"
