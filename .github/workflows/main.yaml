@@ -62,7 +62,6 @@ jobs:
           name: Packages-Microservices
           token: ${{secrets.TOKEN_PACKAGES_READ}}
 
-      - uses: actions/checkout@v3
       - name: Fetch unshallow
         run: git fetch --prune --tags --unshallow
       - name: Install GitVersion
@@ -74,16 +73,15 @@ jobs:
         id: gitversion
         uses: gittools/actions/gitversion/execute@v0
 
-      - name: Set version in project
-        uses: SiqiLu/dotnet-bump-version@2.0.0
+      - name: Set version
+        id: package_version
+        uses: MWin10/set-csproj-version-fork@v1.5.0
         with:
-            version_files: "source/Microservices.Analysis/Microservices.Analysis.csproj"
-            version_mask: 0.0.1.0
-            version_overwrite: "${{ steps.gitversion.outputs.majorMinorPatch }}.${{ steps.gitversion.outputs.weightedPreReleaseNumber }}"
-            github_token: ${{ secrets.GITHUB_TOKEN }}
+          file: source/Microservices.Analysis/Microservices.Analysis.csproj
+          version: ${{ steps.gitversion.outputs.semVer }}
 
       - name: Publish project with version
-        run: dotnet publish --version-suffix=${{ steps.gitversion.outputs.preReleaseTag }} /t:PublishContainer -c Release
+        run: dotnet publish --version-suffix=production /t:PublishContainer -c Release
 
       - name: Docker Login
         uses: actions-hub/docker/login@master

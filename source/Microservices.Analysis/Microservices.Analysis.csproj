@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
     <PropertyGroup>
-        <Version>0.2.0.27</Version>
+        <Version>0.1.0-alpha.162</Version>
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>        
@@ -13,23 +13,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ContainerLabel Include="microservice-type" Value="commands" />
+        <ContainerLabel Include="microservice-type" Value="commands"/>
     </ItemGroup>
 
     <ItemGroup Label="Entrypoint Assignment">        
-        <ContainerEntrypoint Include="dotnet" />
-        <ContainerEntrypoint Include="Microservices.Analysis.dll" />
+        <ContainerEntrypoint Include="dotnet"/>
+        <ContainerEntrypoint Include="Microservices.Analysis.dll"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Binesty.Packages.Microservices" Version="1.0.12-preview001" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-        <PackageReference Include="Microsoft.NET.Build.Containers" Version="7.0.400" />
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
+        <PackageReference Include="Binesty.Packages.Microservices" Version="1.0.12-preview001"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1"/>
+        <PackageReference Include="Microsoft.NET.Build.Containers" Version="7.0.400"/>
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Domain\Commands\" />
+      <Folder Include="Domain\Commands\"/>
     </ItemGroup>
 </Project>
