@@ -2,6 +2,7 @@
 using Microservices.Analysis.Domain;
 using Microsoft.Extensions.Options;
 using Packages.Microservices;
+using System.Reflection;
 
 namespace Microservices.Analysis
 {
@@ -18,7 +19,7 @@ namespace Microservices.Analysis
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Microservices in execution..");
+            _logger.LogInformation($"Microservices in execution Version: {Assembly.GetExecutingAssembly().GetName().Version}");
 
             await Microservice<Opportunity>.Configure(_settings)
                                            .Start();
